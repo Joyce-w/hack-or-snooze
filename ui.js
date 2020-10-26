@@ -8,6 +8,7 @@ $(async function() {
   const $ownStories = $("#my-articles");
   const $navLogin = $("#nav-login");
   const $navLogOut = $("#nav-logout");
+  const $storyForm = $("#new-story")
 
   // global storyList variable
   let storyList = null;
@@ -44,7 +45,7 @@ $(async function() {
 
   $createAccountForm.on("submit", async function(evt) {
     evt.preventDefault(); // no page refresh
-
+    
     // grab the required fields
     let name = $("#create-account-name").val();
     let username = $("#create-account-username").val();
@@ -99,16 +100,22 @@ $(async function() {
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
 
+    
     // if there is a token in localStorage, call User.getLoggedInUser
     //  to get an instance of User with the right details
     //  this is designed to run once, on page load
     currentUser = await User.getLoggedInUser(token, username);
     await generateStories();
-
+    console.log(currentUser)
     if (currentUser) {
       showNavForLoggedInUser();
+      
     }
-  }
+    
+    // $profileUserName.append(username)
+    // $("#profile-name").append(currentUser.name)
+    // $("#profile-account-date").append(currentUser.createdAt)
+}
 
   /**
    * A rendering function to run to reset the forms and hide the login info
@@ -189,6 +196,7 @@ $(async function() {
   function showNavForLoggedInUser() {
     $navLogin.hide();
     $navLogOut.show();
+    $storyForm.show();
   }
 
   /* simple function to pull the hostname from a URL */

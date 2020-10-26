@@ -92,7 +92,7 @@ class User {
 
     // attach the token to the newUser instance for convenience
     newUser.loginToken = response.data.token;
-
+    console.log(newUser)
     return newUser;
   }
 
@@ -119,7 +119,6 @@ class User {
 
     // attach the token to the newUser instance for convenience
     existingUser.loginToken = response.data.token;
-
     return existingUser;
   }
 
