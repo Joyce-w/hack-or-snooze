@@ -8,7 +8,9 @@ $(async function() {
   const $ownStories = $("#my-articles");
   const $navLogin = $("#nav-login");
   const $navLogOut = $("#nav-logout");
-  const $storyForm = $("#new-story")
+  const $navPost = $("#nav-post")
+  const $articleForm = $("#articles-container")
+
 
   // global storyList variable
   let storyList = null;
@@ -16,6 +18,7 @@ $(async function() {
   // global currentUser variable
   let currentUser = null;
 
+  let publishedStory = null;
   await checkIfLoggedIn();
 
   /**
@@ -38,6 +41,10 @@ $(async function() {
     loginAndSubmitForm();
   });
 
+  $navPost.on("click", function (e) {
+    console.log("You clicked post form")
+    $submitForm.slideToggle();
+  })
   /**
    * Event listener for signing up.
    *  If successfully we will setup a new user instance
@@ -57,6 +64,32 @@ $(async function() {
     syncCurrentUserToLocalStorage();
     loginAndSubmitForm();
   });
+
+
+  // //submit new story
+  // $storyForm.on("submit", async function (e) {
+  //   e.preventDefault()
+
+  //   const title = $("#story-title").val()
+  //   const url = $("#story-url").val()
+
+  //   $("#story-title").val('')
+  //   $("#story-url").val('')
+
+  //   const user = localStorage.getItem("token");
+  //   const author = localStorage.getItem("username");
+
+  //   let newStory = { author, title, url }
+  //   console.log(user)
+  //   console.log(newStory)
+
+  //   const story = addStory(user, newStory)
+
+    
+  //   console.log(`story from ui: ${story}`)
+  // })
+  
+
 
   /**
    * Log Out Functionality
@@ -99,14 +132,13 @@ $(async function() {
     // let's see if we're logged in
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
-
+    
     
     // if there is a token in localStorage, call User.getLoggedInUser
     //  to get an instance of User with the right details
     //  this is designed to run once, on page load
     currentUser = await User.getLoggedInUser(token, username);
     await generateStories();
-    console.log(currentUser)
     if (currentUser) {
       showNavForLoggedInUser();
       
@@ -196,7 +228,8 @@ $(async function() {
   function showNavForLoggedInUser() {
     $navLogin.hide();
     $navLogOut.show();
-    $storyForm.show();
+    $navPost.show();
+    $articleForm.show()
   }
 
   /* simple function to pull the hostname from a URL */
