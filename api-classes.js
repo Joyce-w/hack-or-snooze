@@ -43,25 +43,22 @@ class StoryList {
    * Returns the new story object
    */
 
-  async addStory(user, newStory) {
-
-    console.log(user, newStory)
-    const story = await axios.post("https://hack-or-snooze-v3.herokuapp.com/stories", {
-      user,
-      story: {
-        user,
-        newStory
-      }
-    });
-    console.log(story)
-    return story
+  async addStory(token, newStory) {
+    
+    let newSubmitStory = {
+      "token": token,
+      "story" : newStory
+    }
+    
+    let res = await axios.post(`${BASE_URL}/stories`, newSubmitStory)
+    console.log(res)
+    return res
     // TODO - Implement this functions!
     // this function should return the newly created story so it can be used in
     // the script.js file where it will be appended to the DOM
   }
-
-  
 }
+
 
 
 /**
@@ -161,6 +158,7 @@ class User {
     // instantiate Story instances for the user's favorites and ownStories
     existingUser.favorites = response.data.user.favorites.map(s => new Story(s));
     existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
+    console.log(existingUser)
     return existingUser;
   }
 }

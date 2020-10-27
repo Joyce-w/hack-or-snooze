@@ -41,10 +41,7 @@ $(async function() {
     loginAndSubmitForm();
   });
 
-  $navPost.on("click", function (e) {
-    console.log("You clicked post form")
-    $submitForm.slideToggle();
-  })
+
   /**
    * Event listener for signing up.
    *  If successfully we will setup a new user instance
@@ -65,29 +62,35 @@ $(async function() {
     loginAndSubmitForm();
   });
 
-
-  // //submit new story
-  // $storyForm.on("submit", async function (e) {
-  //   e.preventDefault()
-
-  //   const title = $("#story-title").val()
-  //   const url = $("#story-url").val()
-
-  //   $("#story-title").val('')
-  //   $("#story-url").val('')
-
-  //   const user = localStorage.getItem("token");
-  //   const author = localStorage.getItem("username");
-
-  //   let newStory = { author, title, url }
-  //   console.log(user)
-  //   console.log(newStory)
-
-  //   const story = addStory(user, newStory)
-
+  $navPost.on("click", function (e) {
+    $submitForm.slideToggle();
     
-  //   console.log(`story from ui: ${story}`)
-  // })
+  })
+
+  
+  //submit new story
+  $submitForm.on("submit", async function (e) {
+    e.preventDefault()
+
+    const author = $("#author").val()
+    const title = $("#title").val()
+    const url = $("#url").val()
+
+    $("#url").val('')
+    $("#author").val('')
+    $("#title").val('')
+
+    let token = currentUser.loginToken;
+    
+    let newStory = new StoryList({ author, title, url})
+    
+    let test1 = await newStory.addStory(token, { author, title, url });
+ 
+    return test1
+    
+    
+    
+  })
   
 
 
