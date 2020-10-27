@@ -14,13 +14,18 @@ userlogin()(username and password)
 
 //create story from userlogin
 createNewStory() (token, username, title, author, url)
-**Create a New Sotyr endpoint**
+
+**Create a New Story endpoint**
 add new form
 when submitted, send data in form of API: StoryList class
 
 responds with newly created story
 append story to DOM
 make sure only logged in users can create new story
+
+//check if logged in
+ checkIfLoggedIn()
+token 
 
 
 //allow users to fav/unfav a favorite story
