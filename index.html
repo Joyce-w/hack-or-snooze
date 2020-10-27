@@ -18,13 +18,23 @@
     <span class="nav-link nav-right hidden" id="nav-welcome">
       <a href="#" id="nav-user-profile"></a>
     </span>
+    <a class="hidden" id="nav-profile" href="#">
+      <small> (Profile)</small>
+    </a>
     <a class="hidden" id="nav-logout" href="#">
-      <small>(logout)</small>
+      <small> (Logout)</small>
     </a>
     <a class="hidden" id="nav-post" href="#">
-      <small>(post)</small>
+      <small> (Post) </small>
+    </a>
+    <a class="hidden" id="nav-fav" href="#">
+      <small> (Favorites) </small>
+    </a>
+    <a class="hidden" id="nav-post" href="#">
+      <small> (My Stories) </small>
     </a>
   </nav>
+
   <section class="articles-container container">
     <form action="" class="hidden" id="submit-form">
       <div>
@@ -49,6 +59,7 @@
     </article>
     <article>
       <ul id="favorited-articles" class="hidden articles-list">
+        <h4>This are the articles you havorited!</h4>
       </ul>
     </article>
     <article>
@@ -60,6 +71,7 @@
       </ul>
     </article>
   </section>
+
   <section class="edit-article-container container">
     <form action="#" id="edit-article-form" class="hidden" method="post">
       <h4>Article Information</h4>

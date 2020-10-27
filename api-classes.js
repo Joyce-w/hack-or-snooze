@@ -158,7 +158,7 @@ class User {
     // instantiate Story instances for the user's favorites and ownStories
     existingUser.favorites = response.data.user.favorites.map(s => new Story(s));
     existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
-    console.log(existingUser)
+
     return existingUser;
   }
 }

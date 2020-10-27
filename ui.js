@@ -3,13 +3,17 @@ $(async function() {
   const $allStoriesList = $("#all-articles-list");
   const $submitForm = $("#submit-form");
   const $filteredArticles = $("#filtered-articles");
+  const $favoriteArticles = $("favorited-articles");
   const $loginForm = $("#login-form");
   const $createAccountForm = $("#create-account-form");
   const $ownStories = $("#my-articles");
   const $navLogin = $("#nav-login");
   const $navLogOut = $("#nav-logout");
   const $navPost = $("#nav-post")
+  const $navFav = $("#nav-fav")
   const $articleForm = $("#articles-container")
+  const $navProfile = $("#nav-profile")
+  const $userProfile = $("#user-profile")
 
 
   // global storyList variable
@@ -86,13 +90,11 @@ $(async function() {
     
     let test1 = await newStory.addStory(token, { author, title, url });
  
+    location.reload();
     return test1
-    
-    
-    
+  
   })
   
-
 
   /**
    * Log Out Functionality
@@ -116,6 +118,19 @@ $(async function() {
     $allStoriesList.toggle();
   });
 
+  //on click of fav articles, show article
+  $navFav.on("click", function () {
+    alert('you clicked favs')
+    $favoriteArticles.show();
+    $allStoriesList.hide();
+  
+  })
+
+    //favorite a story
+  $(".far").on("click", function () {
+    alert('you clicked a star!')
+  })
+
   /**
    * Event handler for Navigation to Homepage
    */
@@ -125,6 +140,11 @@ $(async function() {
     await generateStories();
     $allStoriesList.show();
   });
+
+  //profile
+  $navProfile.on("click", function() {
+    $userProfile.slideToggle()
+  })
 
   /**
    * On page load, checks local storage to see if the user is already logged in.
@@ -202,8 +222,11 @@ $(async function() {
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
+        <input type="checkbox" id="fav" name="scales"
+         checked>
+  <label for="fav"><i class="far fa-star"></i></label>
         <a class="article-link" href="${story.url}" target="a_blank">
-          <strong>${story.title}</strong>
+          <strong> ${story.title}</strong>
         </a>
         <small class="article-author">by ${story.author}</small>
         <small class="article-hostname ${hostName}">(${hostName})</small>
@@ -232,7 +255,9 @@ $(async function() {
     $navLogin.hide();
     $navLogOut.show();
     $navPost.show();
-    $articleForm.show()
+    $navFav.show();
+    $articleForm.show();
+    $navProfile.show();
   }
 
   /* simple function to pull the hostname from a URL */

@@ -226,3 +226,13 @@ form > hr {
     margin: 8px auto;
   }
 }
+
+/* 
+input[type=checkbox] {
+  height: 0;
+  width: 0;
+  visibility: hidden;
+}
+input:checked+label {
+  color: #bada55;
+} */
