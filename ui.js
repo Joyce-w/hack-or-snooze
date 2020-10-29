@@ -3,7 +3,7 @@ $(async function() {
   const $allStoriesList = $("#all-articles-list");
   const $submitForm = $("#submit-form");
   const $filteredArticles = $("#filtered-articles");
-  const $favoriteArticles = $("favorited-articles");
+  const $favoriteArticles = $("#favorited-articles");
   const $loginForm = $("#login-form");
   const $createAccountForm = $("#create-account-form");
   const $ownStories = $("#my-articles");
@@ -68,6 +68,8 @@ $(async function() {
 
   $navPost.on("click", function (e) {
     $submitForm.slideToggle();
+    $favoriteArticles.hide();
+
     
   })
 
@@ -120,9 +122,10 @@ $(async function() {
 
   //on click of fav articles, show article
   $navFav.on("click", function () {
-    alert('you clicked favs')
-    $favoriteArticles.show();
+    $favoriteArticles.toggle();
     $allStoriesList.hide();
+    $userProfile.hide();
+    $submitForm.hide();
   
   })
 
@@ -141,7 +144,7 @@ $(async function() {
     $allStoriesList.show();
   });
 
-  //profile
+  //Profile from navigation
   $navProfile.on("click", function() {
     $userProfile.slideToggle()
   })
