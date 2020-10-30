@@ -137,19 +137,33 @@ $(async function() {
     //toggle between solid and regular star when clicked
     e.target.className === "far fa-star" ? e.target.className = "fas fa-star" : e.target.className = "far fa-star";
     //if solid star, transfer article information to favorites section
+    let storyId = e.target.parentElement.parentElement.id;
     if (e.target.className === "fas fa-star") {
-      let storyId = e.target.parentElement.parentElement.id;
       
       let post = await axios.post(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { "token": userToken })
+      console.log(post)
+      generateFavStories()
+    }
+
+    //if regular star, remove article info from favorites section
+    if (e.target.className === "far fa-star") {
+      
+      let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
+      console.log(del)
       
     }
   })
+    //delete favorite story from users[favorites]
+  async function deleteFav() {
+   
+    
+  }
+deleteFav()
 
   //generate favStories
   async function generateFavStories() {
-    let username = currentUser.username
-    let userToken = currentUser.loginToken
-    let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${username}?token=${userToken}`)
+
+    let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
 
     let { favorites } = res.data.user
 
@@ -184,6 +198,7 @@ $(async function() {
 
     return favStoryMarkup;
   }
+
 
 
   /**
