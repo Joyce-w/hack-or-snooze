@@ -153,16 +153,17 @@ $(async function() {
 
     let { favorites } = res.data.user
 
-      for (let favStory of favorites) {
+    //makes sure there are no repeats in data
+    let favoriteData = [...new Set(favorites)]
+    
+      for (let favStory of favoriteData) {
         let test = generateFavorites(favStory)
-
+        
         //make sure star is solid
         $favoriteArticles.append(test)
       }
   }
   generateFavStories() 
-
-
 
   //function to render favorite stories 
   function generateFavorites(favStory) {
@@ -171,7 +172,7 @@ $(async function() {
     // render story markup
     const favStoryMarkup = $(`
       <li id="${favStory.storyId}">
-        <span class="star"><i class="far fa-star"></i></span>
+        <span class="star"><i class="fas fa-star"></i></span>
         <a class="article-link" href="${favStory.url}" target="a_blank">
           <strong> ${favStory.title}</strong>
         </a>
@@ -267,7 +268,6 @@ $(async function() {
     const storyListInstance = await StoryList.getStories();
     // update our global variable
     storyList = storyListInstance;
-    console.log(storyList)
     // empty out that part of the page
     $allStoriesList.empty();
 
