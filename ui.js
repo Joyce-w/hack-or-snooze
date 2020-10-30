@@ -25,6 +25,7 @@ $(async function() {
   let publishedStory = null;
   await checkIfLoggedIn();
 
+  
   /**
    * Event listener for logging in.
    *  If successfully we will setup the user instance
@@ -122,17 +123,67 @@ $(async function() {
 
   //on click of fav articles, show article
   $navFav.on("click", function () {
-    $favoriteArticles.toggle();
+    $favoriteArticles.show();
     $allStoriesList.hide();
     $userProfile.hide();
     $submitForm.hide();
   
   })
 
-    //favorite a story
-  $(".far").on("click", function () {
-    alert('you clicked a star!')
+    //favorite a story, send to api
+  $(".star").on("click", async function (e) {
+    let userToken = currentUser.loginToken
+    let username = currentUser.username
+    //toggle between solid and regular star when clicked
+    e.target.className === "far fa-star" ? e.target.className = "fas fa-star" : e.target.className = "far fa-star";
+    //if solid star, transfer article information to favorites section
+    if (e.target.className === "fas fa-star") {
+      let storyId = e.target.parentElement.parentElement.id;
+      
+      let post = await axios.post(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { "token": userToken })
+      
+    }
   })
+
+  //generate favStories
+  async function generateFavStories() {
+    let username = currentUser.username
+    let userToken = currentUser.loginToken
+    let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${username}?token=${userToken}`)
+
+    let { favorites } = res.data.user
+
+      for (let favStory of favorites) {
+        let test = generateFavorites(favStory)
+
+        //make sure star is solid
+        $favoriteArticles.append(test)
+      }
+  }
+  generateFavStories() 
+
+
+
+  //function to render favorite stories 
+  function generateFavorites(favStory) {
+    let hostName = getHostName(favStory.url);
+
+    // render story markup
+    const favStoryMarkup = $(`
+      <li id="${favStory.storyId}">
+        <span class="star"><i class="far fa-star"></i></span>
+        <a class="article-link" href="${favStory.url}" target="a_blank">
+          <strong> ${favStory.title}</strong>
+        </a>
+        <small class="article-author">by ${favStory.author}</small>
+        <small class="article-hostname ${hostName}">(${hostName})</small>
+        <small class="article-username">posted by ${favStory.username}</small>
+      </li>
+    `);
+
+    return favStoryMarkup;
+  }
+
 
   /**
    * Event handler for Navigation to Homepage
@@ -142,11 +193,21 @@ $(async function() {
     hideElements();
     await generateStories();
     $allStoriesList.show();
+    $articleForm.hide();
+    $submitForm.hide();
+    $userProfile.hide();
+    
+
   });
 
   //Profile from navigation
   $navProfile.on("click", function() {
-    $userProfile.slideToggle()
+    $userProfile.slideToggle();
+    $submitForm.hide();
+    $allStoriesList.hide();
+    $submitForm.hide();
+    $favoriteArticles.hide();
+
   })
 
   /**
@@ -205,11 +266,13 @@ $(async function() {
     const storyListInstance = await StoryList.getStories();
     // update our global variable
     storyList = storyListInstance;
+    console.log(storyList)
     // empty out that part of the page
     $allStoriesList.empty();
 
     // loop through all of our stories and generate HTML for them
     for (let story of storyList.stories) {
+      // console.log(story)
       const result = generateStoryHTML(story);
       $allStoriesList.append(result);
     }
@@ -225,9 +288,7 @@ $(async function() {
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
-        <input type="checkbox" id="fav" name="scales"
-         checked>
-  <label for="fav"><i class="far fa-star"></i></label>
+        <span class="star"><i class="far fa-star"></i></span>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong> ${story.title}</strong>
         </a>
