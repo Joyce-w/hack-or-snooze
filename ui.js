@@ -1,16 +1,16 @@
 $(async function() {
   // cache some selectors we'll be using quite a bit
   const $allStoriesList = $("#all-articles-list");
-  const $submitForm = $("#submit-form");
   const $filteredArticles = $("#filtered-articles");
-  const $favoriteArticles = $("#favorited-articles");
   const $loginForm = $("#login-form");
   const $createAccountForm = $("#create-account-form");
   const $ownStories = $("#my-articles");
   const $navLogin = $("#nav-login");
   const $navLogOut = $("#nav-logout");
   const $navPost = $("#nav-post")
+  const $submitForm = $("#submit-form");
   const $navFav = $("#nav-fav")
+  const $favoriteArticles = $("#favorited-articles");
   const $articleForm = $("#articles-container")
   const $navProfile = $("#nav-profile")
   const $userProfile = $("#user-profile")
@@ -196,6 +196,7 @@ $(async function() {
     $articleForm.hide();
     $submitForm.hide();
     $userProfile.hide();
+    $favoriteArticles.hide();
     
 
   });
@@ -322,6 +323,8 @@ $(async function() {
     $navFav.show();
     $articleForm.show();
     $navProfile.show();
+    $userProfile.hide();
+    generateFavStories() 
   }
 
   /* simple function to pull the hostname from a URL */
