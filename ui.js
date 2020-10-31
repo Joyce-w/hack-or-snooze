@@ -130,47 +130,59 @@ $(async function() {
   
   })
 
+  
+  let userToken = currentUser.loginToken
+  let username = currentUser.username
+  
     //favorite a story, send to api
-  $(".star").on("click", async function (e) {
-    let userToken = currentUser.loginToken
-    let username = currentUser.username
-    //toggle between solid and regular star when clicked
-    e.target.className === "far fa-star" ? e.target.className = "fas fa-star" : e.target.className = "far fa-star";
+  $(".star").on("click",".far", async function (e) {
+    //make star solid upon clicking
+    e.target.className = "fas fa-star";
     //if solid star, transfer article information to favorites section
     let storyId = e.target.parentElement.parentElement.id;
-    if (e.target.className === "fas fa-star") {
-      
-      let post = await axios.post(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { "token": userToken })
-      console.log(post)
-      generateFavStories()
-    }
-
-    //if regular star, remove article info from favorites section
-    if (e.target.className === "far fa-star") {
-      
-      let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
-      console.log(del)
-      
-    }
-  })
-    //delete favorite story from users[favorites]
-  async function deleteFav() {
-   
+    let fav = new Set([])
+    fav.add(storyId)
+    console.log(fav)
     
-  }
-deleteFav()
+    //add favorited story to user
+    let post = await axios.post(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { "token": userToken })
 
+    generateFavStories()
+    
+  })
+  //remove favorite from user api
+  $(".star").on("click", ".fas", async function (e) {
+    let storyId = e.target.parentElement.parentElement.id;
+     console.log(e)
+    //make star reg upon clicking
+    e.target.className = "far fa-star";
+    //delete story from api
+    let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
+    console.log(del)
+
+    let fav = new Set([])
+    
+    //make function to physically remove from favorites section
+    removeFav(storyId)
+  })
+
+  //remove favorites from favorites article
+  function removeFav() {
+    
+
+  }
+  
   //generate favStories
   async function generateFavStories() {
-
-    let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
-
-    let { favorites } = res.data.user
-
-    //makes sure there are no repeats in data
-    let favoriteData = [...new Set(favorites)]
     
-      for (let favStory of favoriteData) {
+    let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
+    let fav = new Set()
+    let { favorites } = res.data.user
+    console.log(favorites)
+    
+    for (let favStory of favorites) {
+      fav.add(favStory)
+      console.log(fav)
         let test = generateFavorites(favStory)
         
         //make sure star is solid
@@ -200,6 +212,8 @@ deleteFav()
   }
 
 
+
+  
 
   /**
    * Event handler for Navigation to Homepage
