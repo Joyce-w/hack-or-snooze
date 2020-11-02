@@ -53,6 +53,7 @@ class StoryList {
     let res = await axios.post(`${BASE_URL}/stories`, newSubmitStory)
     console.log(res)
     return res
+
     // TODO - Implement this functions!
     // this function should return the newly created story so it can be used in
     // the script.js file where it will be appended to the DOM

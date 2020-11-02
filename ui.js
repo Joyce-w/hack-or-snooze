@@ -91,10 +91,10 @@ $(async function() {
     
     let newStory = new StoryList({ author, title, url})
     
-    let test1 = await newStory.addStory(token, { author, title, url });
+    let postStory = await newStory.addStory(token, { author, title, url });
  
     location.reload();
-    return test1
+    return postStory;
   
   })
   
@@ -176,7 +176,7 @@ $(async function() {
   
   //generate favStories
   async function generateFavStories() {
-    
+    $('#favorited-articles li').remove()
     let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
     let fav = new Set()
     let { favorites } = res.data.user
@@ -185,13 +185,12 @@ $(async function() {
     for (let favStory of favorites) {
       fav.add(favStory)
       console.log(fav)
-        let test = generateFavorites(favStory)
-        
-        //make sure star is solid
-        $favoriteArticles.append(test)
+        let indivFav = generateFavorites(favStory)
+
+      $favoriteArticles.append(indivFav)
       }
   }
-  generateFavStories() 
+
 
   //function to render favorite stories 
   function generateFavorites(favStory) {
