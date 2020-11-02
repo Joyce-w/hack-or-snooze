@@ -133,13 +133,9 @@ $(async function() {
     
   }
   
-
-
-
   //remove favorites from favorites article
   function removeFav(targetLI) {
-    targetLI.remove()
-
+    $('#favorited-articles').find(targetLI).remove()
   }
   
   //generate favStories
