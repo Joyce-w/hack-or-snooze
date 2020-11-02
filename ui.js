@@ -130,7 +130,7 @@ $(async function() {
   
   })
 
-  
+  function clickStar() {
   let userToken = currentUser.loginToken
   let username = currentUser.username
   
@@ -165,6 +165,8 @@ $(async function() {
     //make function to physically remove from favorites section
     removeFav(storyId)
   })
+  }
+  
 
   //remove favorites from favorites article
   function removeFav() {
@@ -227,13 +229,13 @@ $(async function() {
     $submitForm.hide();
     $userProfile.hide();
     $favoriteArticles.hide();
+    clickStar()
     
-
   });
 
   //Profile from navigation
   $navProfile.on("click", function() {
-    $userProfile.slideToggle();
+    $userProfile.show();
     $submitForm.hide();
     $allStoriesList.hide();
     $submitForm.hide();
