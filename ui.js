@@ -69,9 +69,7 @@ $(async function() {
 
   $navPost.on("click", function (e) {
     $submitForm.slideToggle();
-    $favoriteArticles.hide();
-
-    
+    $favoriteArticles.hide();    
   })
 
   
@@ -99,37 +97,6 @@ $(async function() {
   })
   
 
-  /**
-   * Log Out Functionality
-   */
-
-  $navLogOut.on("click", function() {
-    // empty out local storage
-    localStorage.clear();
-    // refresh the page, clearing memory
-    location.reload();
-  });
-
-  /**
-   * Event Handler for Clicking Login
-   */
-
-  $navLogin.on("click", function() {
-    // Show the Login and Create Account Forms
-    $loginForm.slideToggle();
-    $createAccountForm.slideToggle();
-    $allStoriesList.toggle();
-  });
-
-  //on click of fav articles, show article
-  $navFav.on("click", function () {
-    $favoriteArticles.show();
-    $allStoriesList.hide();
-    $userProfile.hide();
-    $submitForm.hide();
-  
-  })
-
   function clickStar() {
   let userToken = currentUser.loginToken
   let username = currentUser.username
@@ -140,37 +107,38 @@ $(async function() {
     e.target.className = "fas fa-star";
     //if solid star, transfer article information to favorites section
     let storyId = e.target.parentElement.parentElement.id;
-    let fav = new Set([])
-    fav.add(storyId)
-    console.log(fav)
     
     //add favorited story to user
     let post = await axios.post(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { "token": userToken })
 
     generateFavStories()
+
+    //if story is starred, keep solid
     
   })
   //remove favorite from user api
-  $(".star").on("click", ".fas", async function (e) {
+    $(".star").on("click", ".fas", async function (e) {
     let storyId = e.target.parentElement.parentElement.id;
-     console.log(e)
+      let targetLI = e.target.parentElement.parentElement;
     //make star reg upon clicking
     e.target.className = "far fa-star";
     //delete story from api
     let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
     console.log(del)
 
-    let fav = new Set([])
-    
+
     //make function to physically remove from favorites section
-    removeFav(storyId)
-  })
+    removeFav(targetLI)
+    })
+    
   }
   
 
+
+
   //remove favorites from favorites article
-  function removeFav() {
-    
+  function removeFav(targetLI) {
+    targetLI.remove()
 
   }
   
@@ -184,7 +152,6 @@ $(async function() {
     
     for (let favStory of favorites) {
       fav.add(favStory)
-      console.log(fav)
         let indivFav = generateFavorites(favStory)
 
       $favoriteArticles.append(indivFav)
@@ -215,6 +182,36 @@ $(async function() {
 
 
   
+  /**
+   * Log Out Functionality
+   */
+
+  $navLogOut.on("click", function() {
+    // empty out local storage
+    localStorage.clear();
+    // refresh the page, clearing memory
+    location.reload();
+  });
+
+  /**
+   * Event Handler for Clicking Login
+   */
+
+  $navLogin.on("click", function() {
+    // Show the Login and Create Account Forms
+    $loginForm.slideToggle();
+    $createAccountForm.slideToggle();
+    $allStoriesList.toggle();
+  });
+
+  //on click of fav articles, show article
+  $navFav.on("click", function () {
+    $favoriteArticles.show();
+    $allStoriesList.hide();
+    $userProfile.hide();
+    $submitForm.hide();
+    clickStar()
+  })
 
   /**
    * Event handler for Navigation to Homepage
@@ -355,6 +352,7 @@ $(async function() {
     $navProfile.show();
     $userProfile.hide();
     generateFavStories() 
+    clickStar()
   }
 
   /* simple function to pull the hostname from a URL */
@@ -380,4 +378,6 @@ $(async function() {
       localStorage.setItem("username", currentUser.username);
     }
   }
+
+  clickStar()
 });
