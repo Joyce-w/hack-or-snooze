@@ -306,11 +306,11 @@ $(async function() {
     //  this is designed to run once, on page load
     currentUser = await User.getLoggedInUser(token, username);
     await generateStories();
-    await generateFavStories();
+    
     
     if (currentUser) {
       showNavForLoggedInUser();
-      
+      await generateFavStories();
     }
 }
 
