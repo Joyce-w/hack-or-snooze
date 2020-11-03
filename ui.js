@@ -397,6 +397,7 @@ $(async function() {
     $userProfile.hide();
     $navMyStories.show();
     ownStories()
+    generateFavStories();
     click()
   }
 
