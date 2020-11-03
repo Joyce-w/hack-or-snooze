@@ -108,28 +108,40 @@ $(async function() {
   $(".star").on("click",".far", async function (e) {
     //make star solid upon clicking
     e.target.className = "fas fa-star";
-    //if solid star, transfer article information to favorites section
+
+    //get storyId to send to POST request
     let storyId = e.target.parentElement.parentElement.id;
     
-    //add favorited story to user
+    //add favorited story to user API
     let post = await axios.post(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { "token": userToken })
 
-    generateFavStories()
+    //save userFavorites to a set for appending later
+    await userFavorites()
 
-    
+    //generate favorite stories
+    generateFavStories(favArr)    
   })
-  //remove favorite from user api
+  //remove favorite from user api when unfavorited
     $(".star").on("click", ".fas", async function (e) {
-      let storyId = e.target.parentElement.parentElement.id;
-      let targetLI = e.target.parentElement.parentElement;
-    //make star reg upon clicking
-    e.target.className = "far fa-star";
-    //delete story from api
-    let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
-      console.log(del)
+      //make star reg upon clicking
+      e.target.className = "far fa-star";
 
-  //remove favorites from favorites article
+      //delete favorite from user
+      let targetLI = e.target.parentElement.parentElement;
+
+      //get storyId to delete
+      let storyId = e.target.parentElement.parentElement.id;
+
+      //delete story from user API 
+      let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
+      console.log(del)
+      
+      //update user favorites
+      await userFavorites()
+      
+      //remove favorites from favorites article
       $('#favorited-articles').find(targetLI).remove()
+      generateFavStories(favArr)  
 
     })
 
@@ -144,7 +156,25 @@ $(async function() {
       
     })
   }
+    
+  async function userFavorites() {
+    
+    let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
+    console.log(res)
+    let { user } = res.data
+    //returns array of user favorites
+    console.log(user.favorites)
+    //add to set
+    
 
+
+    // for (let favorites of user.data) {
+    //   console.log(favorites)
+    //   favArr.add(favStory)
+    // }
+    // console.log(favArr)
+  }
+  
   
   //generate favStories
   async function generateFavStories() {
