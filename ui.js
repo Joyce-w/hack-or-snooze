@@ -355,12 +355,19 @@ $(async function() {
    */
 
   function generateStoryHTML(story) {
+    let star = "far"
+
+      if (currentUser) {
+       star = solidStars(story) ? "fas" : "far"
+      }
+
+
     let hostName = getHostName(story.url);
 
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
-        <span class="star"><i class="far fa-star"></i></span>
+        <span class="star"><i class="${star} fa-star"></i></span>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong> ${story.title}</strong>
         </a>
@@ -371,6 +378,16 @@ $(async function() {
     `);
 
     return storyMarkup;
+  }
+  
+    function solidStars(story) {
+ 
+    let favStoryId = new Set()
+    for (let myStory of currentUser.favorites) {
+      favStoryId.add(myStory.storyId)
+    }
+
+    return favStoryId.has(story.storyId)
   }
 
   /* hide all elements in elementsArr */
