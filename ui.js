@@ -127,7 +127,7 @@ $(async function() {
     //delete story from api
     let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
       console.log(del)
-      console.log(targetLI)
+
   //remove favorites from favorites article
       $('#favorited-articles').find(targetLI).remove()
       await generateFavStories()
@@ -141,7 +141,7 @@ $(async function() {
       let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/stories/${storyId}`, { data: { "token": userToken } })
       
       $('#my-articles').find(targetLI).remove()
-
+      
     })
   }
 
@@ -155,7 +155,6 @@ $(async function() {
     let { favorites } = res.data.user
     
     for (let favStory of favorites) {
-      console.log(favStory)
       let indivFav = generateFavorites(favStory)
 
       $favoriteArticles.append(indivFav)
@@ -307,6 +306,7 @@ $(async function() {
     //  this is designed to run once, on page load
     currentUser = await User.getLoggedInUser(token, username);
     await generateStories();
+    await generateFavStories();
     
     if (currentUser) {
       showNavForLoggedInUser();
@@ -421,7 +421,6 @@ $(async function() {
     $userProfile.hide();
     $navMyStories.show();
     ownStories()
-    generateFavStories();
     click()
   }
 
