@@ -116,24 +116,24 @@ $(async function() {
 
     generateFavStories()
 
-    //if story is starred, keep solid
     
   })
   //remove favorite from user api
     $(".star").on("click", ".fas", async function (e) {
-    let storyId = e.target.parentElement.parentElement.id;
+      let storyId = e.target.parentElement.parentElement.id;
       let targetLI = e.target.parentElement.parentElement;
     //make star reg upon clicking
     e.target.className = "far fa-star";
     //delete story from api
     let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
-
+      console.log(del)
+      console.log(targetLI)
   //remove favorites from favorites article
-    $('#favorited-articles').find(targetLI).remove()
+      $('#favorited-articles').find(targetLI).remove()
+      await generateFavStories()
     })
 
-    //remove own article when trash is clicked
-
+    //remove own article when trashcan  is clicked
     $(".fa-trash").on("click", async function (e) {
       let targetLI = e.target.parentElement;
       let storyId = e.target.parentElement.id
@@ -149,21 +149,25 @@ $(async function() {
   //generate favStories
   async function generateFavStories() {
     $('#favorited-articles li').remove()
+          
     let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
-    let fav = new Set()
+
     let { favorites } = res.data.user
     
     for (let favStory of favorites) {
-      fav.add(favStory)
-        let indivFav = generateFavorites(favStory)
+      console.log(favStory)
+      let indivFav = generateFavorites(favStory)
 
       $favoriteArticles.append(indivFav)
-      }
+    }
+    
+
   }
 
 
   //function to render favorite stories 
   function generateFavorites(favStory) {
+
     let hostName = getHostName(favStory.url);
 
     // render story markup
@@ -223,8 +227,8 @@ $(async function() {
    */
 
   $("body").on("click", "#nav-all", async function() {
+     await generateStories();
     hideElements();
-    await generateStories();
     $allStoriesList.show();
     $articleForm.hide();
     $submitForm.hide();
@@ -303,6 +307,7 @@ $(async function() {
     //  this is designed to run once, on page load
     currentUser = await User.getLoggedInUser(token, username);
     await generateStories();
+    
     if (currentUser) {
       showNavForLoggedInUser();
       
@@ -335,6 +340,7 @@ $(async function() {
    */
 
   async function generateStories() {
+
     // get an instance of StoryList
     const storyListInstance = await StoryList.getStories();
     // update our global variable
@@ -355,6 +361,7 @@ $(async function() {
    */
 
   function generateStoryHTML(story) {
+    
     let star = "far"
 
       if (currentUser) {
