@@ -14,6 +14,8 @@ $(async function() {
   const $articleForm = $("#articles-container")
   const $navProfile = $("#nav-profile")
   const $userProfile = $("#user-profile")
+  const $navMyStories = $("#nav-myStories")
+  const $myStories = $("#my-articles")
 
 
   // global storyList variable
@@ -70,6 +72,7 @@ $(async function() {
   $navPost.on("click", function (e) {
     $submitForm.slideToggle();
     $favoriteArticles.hide();    
+    $myStories.hide()
   })
 
   
@@ -97,7 +100,7 @@ $(async function() {
   })
   
 
-  function clickStar() {
+  function click() {
   let userToken = currentUser.loginToken
   let username = currentUser.username
   
@@ -124,19 +127,24 @@ $(async function() {
     e.target.className = "far fa-star";
     //delete story from api
     let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
-    console.log(del)
 
-
-    //make function to physically remove from favorites section
-    removeFav(targetLI)
-    })
-    
-  }
-  
   //remove favorites from favorites article
-  function removeFav(targetLI) {
     $('#favorited-articles').find(targetLI).remove()
+    })
+
+    //remove own article when trash is clicked
+
+    $(".fa-trash").on("click", async function (e) {
+      let targetLI = e.target.parentElement;
+      let storyId = e.target.parentElement.id
+
+      let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/stories/${storyId}`, { data: { "token": userToken } })
+      
+      $('#my-articles').find(targetLI).remove()
+
+    })
   }
+
   
   //generate favStories
   async function generateFavStories() {
@@ -144,7 +152,6 @@ $(async function() {
     let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
     let fav = new Set()
     let { favorites } = res.data.user
-    console.log(favorites)
     
     for (let favStory of favorites) {
       fav.add(favStory)
@@ -175,7 +182,8 @@ $(async function() {
     return favStoryMarkup;
   }
 
-
+//remove story
+  
 
   
   /**
@@ -206,7 +214,8 @@ $(async function() {
     $allStoriesList.hide();
     $userProfile.hide();
     $submitForm.hide();
-    clickStar()
+    $myStories.hide()
+    click()
   })
 
   /**
@@ -220,8 +229,9 @@ $(async function() {
     $articleForm.hide();
     $submitForm.hide();
     $userProfile.hide();
+    $myStories.hide()
     $favoriteArticles.hide();
-    clickStar()
+    click()
     
   });
 
@@ -232,8 +242,50 @@ $(async function() {
     $allStoriesList.hide();
     $submitForm.hide();
     $favoriteArticles.hide();
-
+    $myStories.hide()
   })
+
+  //Show articles published by own user
+  $navMyStories.on("click", function () {
+    $myStories.show()
+    $userProfile.hide();
+    $submitForm.hide();
+    $allStoriesList.hide();
+    $submitForm.hide();
+    $favoriteArticles.hide();
+    click()
+  
+  })
+//append own stories to #myStories
+  function ownStories() {
+    for (let myStory of currentUser.ownStories) {
+      let ownStory = generateMyStory(myStory) 
+
+      $myStories.append(ownStory)
+  }
+  }
+  
+  function generateMyStory(story) {
+    let hostName = getHostName(story.url);
+
+    // render story markup
+    const storyMarkup = $(`
+      <li id="${story.storyId}">
+        <i class="fas fa-trash"></i>
+        <a class="article-link" href="${story.url}" target="a_blank">
+          <strong> ${story.title}</strong>
+        </a>
+        <small class="article-author">by ${story.author}</small>
+        <small class="article-hostname ${hostName}">(${hostName})</small>
+        <small class="article-username">posted by ${story.username}</small>
+      </li>
+    `);
+
+    return storyMarkup;
+  }
+  
+
+  
 
   /**
    * On page load, checks local storage to see if the user is already logged in.
@@ -255,10 +307,6 @@ $(async function() {
       showNavForLoggedInUser();
       
     }
-    
-    // $profileUserName.append(username)
-    // $("#profile-name").append(currentUser.name)
-    // $("#profile-account-date").append(currentUser.createdAt)
 }
 
   /**
@@ -347,8 +395,9 @@ $(async function() {
     $articleForm.show();
     $navProfile.show();
     $userProfile.hide();
-    generateFavStories() 
-    clickStar()
+    $navMyStories.show();
+    ownStories()
+    click()
   }
 
   /* simple function to pull the hostname from a URL */
@@ -375,5 +424,5 @@ $(async function() {
     }
   }
 
-  clickStar()
+  click()
 });
