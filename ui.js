@@ -130,7 +130,7 @@ $(async function() {
 
   //remove favorites from favorites article
       $('#favorited-articles').find(targetLI).remove()
-      await generateFavStories()
+
     })
 
     //remove own article when trashcan  is clicked
