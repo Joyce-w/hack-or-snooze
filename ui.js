@@ -115,11 +115,8 @@ $(async function() {
     //add favorited story to user API
     let post = await axios.post(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { "token": userToken })
 
-    //save userFavorites to a set for appending later
-    await userFavorites()
-
     //generate favorite stories
-    generateFavStories(favArr)    
+    await generateFavStories()     
   })
   //remove favorite from user api when unfavorited
     $(".star").on("click", ".fas", async function (e) {
@@ -135,13 +132,12 @@ $(async function() {
       //delete story from user API 
       let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
       console.log(del)
-      
-      //update user favorites
-      await userFavorites()
+
       
       //remove favorites from favorites article
-      $('#favorited-articles').find(targetLI).remove()
-      generateFavStories(favArr)  
+      // $('#favorited-articles').find(targetLI).remove()
+      await generateFavStories()  
+      click()
 
     })
 
@@ -155,24 +151,6 @@ $(async function() {
       $('#my-articles').find(targetLI).remove()
       
     })
-  }
-    
-  async function userFavorites() {
-    
-    let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
-    console.log(res)
-    let { user } = res.data
-    //returns array of user favorites
-    console.log(user.favorites)
-    //add to set
-    
-
-
-    // for (let favorites of user.data) {
-    //   console.log(favorites)
-    //   favArr.add(favStory)
-    // }
-    // console.log(favArr)
   }
   
   
@@ -242,12 +220,13 @@ $(async function() {
   });
 
   //on click of fav articles, show article
-  $navFav.on("click", function () {
+  $navFav.on("click", async function () {
     $favoriteArticles.show();
     $allStoriesList.hide();
     $userProfile.hide();
     $submitForm.hide();
     $myStories.hide()
+    await generateFavStories()   
     click()
   })
 
@@ -256,7 +235,8 @@ $(async function() {
    */
 
   $("body").on("click", "#nav-all", async function() {
-     await generateStories();
+    await generateStories();
+    
     hideElements();
     $allStoriesList.show();
     $articleForm.hide();
@@ -423,7 +403,6 @@ $(async function() {
     for (let myStory of currentUser.favorites) {
       favStoryId.add(myStory.storyId)
     }
-
     return favStoryId.has(story.storyId)
   }
 
