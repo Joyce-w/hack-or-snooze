@@ -32,9 +32,10 @@ $(async function() {
    * Event listener for logging in.
    *  If successfully we will setup the user instance
    */
-  $loginForm.on("submit", async function(evt) {
-    evt.preventDefault(); // no page-refresh on submit
+  $loginForm.on("submit", async function (evt) {
 
+    evt.preventDefault(); // no page-refresh on submit
+   
     // grab the username and password
     const username = $("#login-username").val();
     const password = $("#login-password").val();
@@ -45,6 +46,8 @@ $(async function() {
     currentUser = userInstance;
     syncCurrentUserToLocalStorage();
     loginAndSubmitForm();
+    await generateStories();
+    click()
   });
 
 
@@ -76,7 +79,7 @@ $(async function() {
     //Post a story
   $submitForm.on("submit", async function (e) {
     e.preventDefault()
-
+    
     const author = $("#author").val()
     const title = $("#title").val()
     const url = $("#url").val()
@@ -170,6 +173,8 @@ $(async function() {
     if (currentUser) {
          username = currentUser.username
          userToken = currentUser.loginToken
+    } else {
+      return;
     }
 
 
@@ -362,7 +367,7 @@ $(async function() {
 
   function generateStoryHTML(story) {
     
-    let star = "fas"
+    let star = "far"
     if (currentUser) {
       star = solidStars(story) ? "fas" : "far"
 
