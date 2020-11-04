@@ -295,11 +295,28 @@ $(async function() {
   
   })
 
+  //update user profile with info
+  function userProfileInfo() {
+    
+    const username = currentUser.username;
+    $('#profile-username').append(username)
+
+    const name = currentUser.name;
+    $('#profile-name').append(name)
+
+    const creationDay = new Date(currentUser.createdAt).toString()
+    console.log(creationDay)
+    const mm = creationDay.slice(4, 7)
+    const dd = creationDay.slice(8,10)
+    const yyyy = creationDay.slice(11, 15)
+    $('#profile-account-date').append(`${mm} ${dd}, ${yyyy}`)
+
+  }
+
   /**
    * On page load, checks local storage to see if the user is already logged in.
    * Renders page information accordingly.
    */
-
   async function checkIfLoggedIn() {
     // let's see if we're logged in
     const token = localStorage.getItem("token");
@@ -316,6 +333,7 @@ $(async function() {
     if (currentUser) {
       showNavForLoggedInUser();
       await generateFavStories();
+      userProfileInfo()
     }
 }
 
