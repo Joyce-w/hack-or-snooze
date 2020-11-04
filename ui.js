@@ -101,11 +101,19 @@ $(async function() {
   
 
   function click() {
+    let username = null;
+    let userToken = null;
+    if (currentUser) {
+         username = currentUser.username
+         userToken = currentUser.loginToken
+    }
+
+
+    //favorite a story, send to api
+    $(".star").on("click", ".far", async function (e) {
+    
   let userToken = currentUser.loginToken
   let username = currentUser.username
-  
-    //favorite a story, send to api
-  $(".star").on("click",".far", async function (e) {
     //make star solid upon clicking
     e.target.className = "fas fa-star";
 
@@ -134,8 +142,7 @@ $(async function() {
       console.log(del)
 
       
-      //remove favorites from favorites article
-      // $('#favorited-articles').find(targetLI).remove()
+      //remove favorites from favorites article      
       await generateFavStories()  
       click()
 
@@ -235,8 +242,8 @@ $(async function() {
    */
 
   $("body").on("click", "#nav-all", async function() {
-    await generateStories();
     
+    await generateStories();
     hideElements();
     $allStoriesList.show();
     $articleForm.hide();
@@ -244,6 +251,7 @@ $(async function() {
     $userProfile.hide();
     $myStories.hide()
     $favoriteArticles.hide();
+    location.reload()
     click()
     
   });
@@ -372,11 +380,8 @@ $(async function() {
 
   function generateStoryHTML(story) {
     
-    let star = "far"
+    let star = solidStars(story) ? "fas" : "far"
 
-      if (currentUser) {
-       star = solidStars(story) ? "fas" : "far"
-      }
 
 
     let hostName = getHostName(story.url);
