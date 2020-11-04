@@ -32,7 +32,6 @@ $(async function() {
    * Event listener for logging in.
    *  If successfully we will setup the user instance
    */
-
   $loginForm.on("submit", async function(evt) {
     evt.preventDefault(); // no page-refresh on submit
 
@@ -53,7 +52,6 @@ $(async function() {
    * Event listener for signing up.
    *  If successfully we will setup a new user instance
    */
-
   $createAccountForm.on("submit", async function(evt) {
     evt.preventDefault(); // no page refresh
     
@@ -75,8 +73,7 @@ $(async function() {
     $myStories.hide()
   })
 
-  
-  //submit new story
+    //Post a story
   $submitForm.on("submit", async function (e) {
     e.preventDefault()
 
@@ -96,68 +93,34 @@ $(async function() {
  
     location.reload();
     return postStory;
-  
   })
-  
 
-  function click() {
-    let username = null;
-    let userToken = null;
-    if (currentUser) {
-         username = currentUser.username
-         userToken = currentUser.loginToken
+  //append own stories to #myStories
+  function ownStories() {
+    for (let myStory of currentUser.ownStories) {
+      const ownStory = generateMyStoryHTML(myStory) 
+
+      $myStories.append(ownStory)
     }
+  }
+  
+  function generateMyStoryHTML(story) {
+    let hostName = getHostName(story.url);
 
+    // render story markup
+    const storyMarkup = $(`
+      <li id="${story.storyId}">
+        <i class="fas fa-trash"></i>
+        <a class="article-link" href="${story.url}" target="a_blank">
+          <strong> ${story.title}</strong>
+        </a>
+        <small class="article-author">by ${story.author}</small>
+        <small class="article-hostname ${hostName}">(${hostName})</small>
+        <small class="article-username">posted by ${story.username}</small>
+      </li>
+    `);
 
-    //favorite a story, send to api
-    $(".star").on("click", ".far", async function (e) {
-    
-  let userToken = currentUser.loginToken
-  let username = currentUser.username
-    //make star solid upon clicking
-    e.target.className = "fas fa-star";
-
-    //get storyId to send to POST request
-    let storyId = e.target.parentElement.parentElement.id;
-    
-    //add favorited story to user API
-    let post = await axios.post(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { "token": userToken })
-
-    //generate favorite stories
-    await generateFavStories()     
-  })
-  //remove favorite from user api when unfavorited
-    $(".star").on("click", ".fas", async function (e) {
-      //make star reg upon clicking
-      e.target.className = "far fa-star";
-
-      //delete favorite from user
-      let targetLI = e.target.parentElement.parentElement;
-
-      //get storyId to delete
-      let storyId = e.target.parentElement.parentElement.id;
-
-      //delete story from user API 
-      let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
-      console.log(del)
-
-      
-      //remove favorites from favorites article      
-      await generateFavStories()  
-      click()
-
-    })
-
-    //remove own article when trashcan  is clicked
-    $(".fa-trash").on("click", async function (e) {
-      let targetLI = e.target.parentElement;
-      let storyId = e.target.parentElement.id
-
-      let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/stories/${storyId}`, { data: { "token": userToken } })
-      
-      $('#my-articles').find(targetLI).remove()
-      
-    })
+    return storyMarkup;
   }
   
   
@@ -165,23 +128,21 @@ $(async function() {
   async function generateFavStories() {
     $('#favorited-articles li').remove()
           
-    let res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
+    const res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
 
-    let { favorites } = res.data.user
+    //get story info from user favorites and append to favorites seciton
+    const { favorites } = res.data.user
     
     for (let favStory of favorites) {
-      let indivFav = generateFavorites(favStory)
-
+      const indivFav = favStoryHTML(favStory)
       $favoriteArticles.append(indivFav)
     }
     
-
   }
 
-
   //function to render favorite stories 
-  function generateFavorites(favStory) {
-
+  function favStoryHTML(favStory) {
+ 
     let hostName = getHostName(favStory.url);
 
     // render story markup
@@ -198,16 +159,72 @@ $(async function() {
     `);
 
     return favStoryMarkup;
+    
+  }
+  
+  //place click events in function to continue flow of code
+  function click() {
+    let username = null;
+    let userToken = null;
+    
+    if (currentUser) {
+         username = currentUser.username
+         userToken = currentUser.loginToken
+    }
+
+
+    //favorite a story, send to api
+    $(".star").on("click", ".far", async function (e) {
+      //make star solid upon clicking
+      e.target.className = "fas fa-star";
+
+      //save userToken,username, and storyId for API
+      const userToken = currentUser.loginToken
+      const username = currentUser.username
+      const storyId = e.target.parentElement.parentElement.id;
+      
+      //add favorited story to user API
+      const post = await axios.post(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { "token": userToken })
+
+      //generate favorite stories
+      await generateFavStories()   
+      
+    })
+    
+  //remove favorite from user api when unfavorited
+    $(".star").on("click", ".fas", async function (e) {
+      //make star reg upon clicking
+      e.target.className = "far fa-star";
+
+      //get storyId to delete from API
+      const storyId = e.target.parentElement.parentElement.id;
+
+      //delete story from user API 
+      const del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { data: { "token": userToken } })
+
+      //update favorite article   
+      await generateFavStories()  
+      click()
+
+    })
+
+    //remove own article when trash can is clicked
+    $(".fa-trash").on("click", async function (e) {
+
+      const targetLI = e.target.parentElement;
+      //remove the article associated with the trashcan icon that was clicked
+      $('#my-articles').find(targetLI).remove()
+
+      //delete story from userfav in the API
+      const storyId = e.target.parentElement.id
+
+      let del = await axios.delete(`https://hack-or-snooze-v3.herokuapp.com/stories/${storyId}`, { data: { "token": userToken } })
+
+    })
+
   }
 
-//remove story
-  
-
-  
-  /**
-   * Log Out Functionality
-   */
-
+  /*Log Out Functionality*/
   $navLogOut.on("click", function() {
     // empty out local storage
     localStorage.clear();
@@ -215,18 +232,16 @@ $(async function() {
     location.reload();
   });
 
-  /**
-   * Event Handler for Clicking Login
-   */
 
-  $navLogin.on("click", function() {
+  /*Event Handler for Clicking Login*/
+    $navLogin.on("click", function() {
     // Show the Login and Create Account Forms
     $loginForm.slideToggle();
     $createAccountForm.slideToggle();
     $allStoriesList.toggle();
   });
 
-  //on click of fav articles, show article
+  /*on click of fav articles, show article*/
   $navFav.on("click", async function () {
     $favoriteArticles.show();
     $allStoriesList.hide();
@@ -237,12 +252,9 @@ $(async function() {
     click()
   })
 
-  /**
-   * Event handler for Navigation to Homepage
-   */
+  /* Event handler for Navigation to Homepage*/
 
   $("body").on("click", "#nav-all", async function() {
-    
     await generateStories();
     hideElements();
     $allStoriesList.show();
@@ -277,36 +289,6 @@ $(async function() {
     click()
   
   })
-//append own stories to #myStories
-  function ownStories() {
-    for (let myStory of currentUser.ownStories) {
-      let ownStory = generateMyStory(myStory) 
-
-      $myStories.append(ownStory)
-  }
-  }
-  
-  function generateMyStory(story) {
-    let hostName = getHostName(story.url);
-
-    // render story markup
-    const storyMarkup = $(`
-      <li id="${story.storyId}">
-        <i class="fas fa-trash"></i>
-        <a class="article-link" href="${story.url}" target="a_blank">
-          <strong> ${story.title}</strong>
-        </a>
-        <small class="article-author">by ${story.author}</small>
-        <small class="article-hostname ${hostName}">(${hostName})</small>
-        <small class="article-username">posted by ${story.username}</small>
-      </li>
-    `);
-
-    return storyMarkup;
-  }
-  
-
-  
 
   /**
    * On page load, checks local storage to see if the user is already logged in.
@@ -380,15 +362,12 @@ $(async function() {
 
   function generateStoryHTML(story) {
     
-    let star = "far"
+    let star = "fas"
     if (currentUser) {
       star = solidStars(story) ? "fas" : "far"
 
     }
     
-
-
-
     let hostName = getHostName(story.url);
 
     // render story markup
@@ -466,6 +445,6 @@ $(async function() {
       localStorage.setItem("username", currentUser.username);
     }
   }
-
+  
   click()
 });
