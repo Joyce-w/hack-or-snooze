@@ -380,7 +380,12 @@ $(async function() {
 
   function generateStoryHTML(story) {
     
-    let star = solidStars(story) ? "fas" : "far"
+    let star = "far"
+    if (currentUser) {
+      star = solidStars(story) ? "fas" : "far"
+
+    }
+    
 
 
 
@@ -403,7 +408,7 @@ $(async function() {
   }
   
     function solidStars(story) {
- 
+      
     let favStoryId = new Set()
     for (let myStory of currentUser.favorites) {
       favStoryId.add(myStory.storyId)
