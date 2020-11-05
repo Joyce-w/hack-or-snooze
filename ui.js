@@ -298,7 +298,7 @@ $(async function() {
 
   //update user profile with info
   function userProfileInfo() {
-    
+
     const username = currentUser.username;
     $('#profile-username').append(username)
 
@@ -335,7 +335,7 @@ $(async function() {
     if (currentUser) {
       showNavForLoggedInUser();
       await generateFavStories();
-      userProfileInfo()
+      // userProfileInfo()
     }
 }
 

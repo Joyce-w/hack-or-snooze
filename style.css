@@ -4,6 +4,8 @@ html {
 
 body {
   margin: 8px 7.5vw;
+  font-family: 'Open Sans',
+  sans-serif;
 }
 
 h1 {
@@ -24,6 +26,7 @@ h5 {
 a {
   text-decoration: none;
   color: inherit;
+  margin: auto 2px;
 }
 
 a:hover {
@@ -39,7 +42,7 @@ a:hover {
 
 nav {
   display: flex;
-  background-color: #ff6600;
+  background-color: #c3aed6;
   align-items: center;
   padding: 5px 20px;
   border-radius: 3px 3px 0 0;
@@ -62,7 +65,7 @@ nav {
   display: flex;
   flex-direction: column;
   align-self: center;
-  background-color: #f6f6ef;
+  background-color: #faf4ff;
 }
 
 form {
