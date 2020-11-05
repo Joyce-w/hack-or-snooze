@@ -281,6 +281,7 @@ $(async function() {
     $submitForm.hide();
     $favoriteArticles.hide();
     $myStories.hide()
+    userProfileInfo()
   })
 
   //Show articles published by own user
@@ -305,7 +306,7 @@ $(async function() {
     $('#profile-name').append(name)
 
     const creationDay = new Date(currentUser.createdAt).toString()
-    console.log(creationDay)
+
     const mm = creationDay.slice(4, 7)
     const dd = creationDay.slice(8,10)
     const yyyy = creationDay.slice(11, 15)
@@ -318,6 +319,7 @@ $(async function() {
    * Renders page information accordingly.
    */
   async function checkIfLoggedIn() {
+    $userProfile.hide()
     // let's see if we're logged in
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
