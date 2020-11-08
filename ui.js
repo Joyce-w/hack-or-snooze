@@ -319,7 +319,7 @@ $(async function() {
    * Renders page information accordingly.
    */
   async function checkIfLoggedIn() {
-    $userProfile.hide()
+ 
     // let's see if we're logged in
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
@@ -335,7 +335,7 @@ $(async function() {
     if (currentUser) {
       showNavForLoggedInUser();
       await generateFavStories();
-      // userProfileInfo()
+      
     }
 }
 
