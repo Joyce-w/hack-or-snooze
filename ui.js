@@ -32,8 +32,8 @@ $(async function() {
    * Event listener for logging in.
    *  If successfully we will setup the user instance
    */
-  $loginForm.on("submit", async function (evt) {
 
+   function loginFormSubmit(){
     evt.preventDefault(); // no page-refresh on submit
    
     // grab the username and password
@@ -48,7 +48,15 @@ $(async function() {
     loginAndSubmitForm();
     await generateStories();
     click()
-  });
+   }
+
+   ////avoid using anonymous functions, this way you could have named functions and organize the code like this
+
+  $loginForm.on("submit", loginFormSubmit);
+
+  $createAccountForm.on("submit", createAccountForm);
+
+  $navPost.on("submit", loginFormSubmit);
 
 
   /**
@@ -94,6 +102,7 @@ $(async function() {
     
     let postStory = await newStory.addStory(token, { author, title, url });
  
+    ////instead of reload, you could manually regenerate the stories
     location.reload();
     return postStory;
   })
@@ -101,12 +110,13 @@ $(async function() {
   //append own stories to #myStories
   function ownStories() {
     for (let myStory of currentUser.ownStories) {
-      const ownStory = generateMyStoryHTML(myStory) 
+      const ownStory = generateStoryHTML(myStory, true, true) 
 
       $myStories.append(ownStory)
     }
   }
   
+  ////reuse generateStoryHtml
   function generateMyStoryHTML(story) {
     let hostName = getHostName(story.url);
 
@@ -117,6 +127,7 @@ $(async function() {
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong> ${story.title}</strong>
         </a>
+        
         <small class="article-author">by ${story.author}</small>
         <small class="article-hostname ${hostName}">(${hostName})</small>
         <small class="article-username">posted by ${story.username}</small>
@@ -131,12 +142,13 @@ $(async function() {
   async function generateFavStories() {
     $('#favorited-articles li').remove()
           
-    const res = await axios.get(`https://hack-or-snooze-v3.herokuapp.com/users/${currentUser.username}/?token=${currentUser.loginToken}`)
-
-    //get story info from user favorites and append to favorites seciton
-    const { favorites } = res.data.user
+    ////reuse base_url variable
+    ////call functions related to API communication on api-classes file
     
-    for (let favStory of favorites) {
+    currentUser.favorites = await User.getLoggedInUser(currentUser.loginToken, currentUser.username);
+    //get story info from user favorites and append to favorites seciton
+    
+    for (let favStory of currentUser.favorites) {
       const indivFav = favStoryHTML(favStory)
       $favoriteArticles.append(indivFav)
     }
@@ -154,6 +166,9 @@ $(async function() {
         <span class="star"><i class="fas fa-star"></i></span>
         <a class="article-link" href="${favStory.url}" target="a_blank">
           <strong> ${favStory.title}</strong>
+        </a>
+        <a class="article-link" href="${story.url}" target="a_blank">
+          <strong> ${story.author}</strong>
         </a>
         <small class="article-author">by ${favStory.author}</small>
         <small class="article-hostname ${hostName}">(${hostName})</small>
@@ -184,14 +199,12 @@ $(async function() {
       e.target.className = "fas fa-star";
 
       //save userToken,username, and storyId for API
-      const userToken = currentUser.loginToken
-      const username = currentUser.username
       const storyId = e.target.parentElement.parentElement.id;
       
-      //add favorited story to user API
-      const post = await axios.post(`https://hack-or-snooze-v3.herokuapp.com/users/${username}/favorites/${storyId}`, { "token": userToken })
+      //add create a add Favorite story
 
-      //generate favorite stories
+      await currentUser.addFavorite(storyId);
+      //generate favorite stories 
       await generateFavStories()   
       
     })
@@ -307,9 +320,15 @@ $(async function() {
 
     const creationDay = new Date(currentUser.createdAt).toString()
 
+    creationDay.getDay()
+    creationDay.getMonth()
+    creationDay.getYear();
+
+    ////the creationDay you have functions like getMonth(), getDay()
     const mm = creationDay.slice(4, 7)
     const dd = creationDay.slice(8,10)
     const yyyy = creationDay.slice(11, 15)
+    
     $('#profile-account-date').append(`${mm} ${dd}, ${yyyy}`)
 
   }
@@ -385,7 +404,11 @@ $(async function() {
    * A function to render HTML for an individual Story instance
    */
 
-  function generateStoryHTML(story) {
+
+   generateStoryHTML({}, true, false);
+
+   ////centralize on this function
+  function generateStoryHTML(story, isFavorite, isOwnStory) {
     
     let star = "far"
     if (currentUser) {
@@ -393,14 +416,20 @@ $(async function() {
 
     }
     
+    let trashCanIcon = isOwnStory ? '<i class="fas fa-trash"></i>' : '';
+
     let hostName = getHostName(story.url);
 
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
+        ${trashCanIcon}
         <span class="star"><i class="${star} fa-star"></i></span>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong> ${story.title}</strong>
+        </a>
+        <a class="article-link" href="${story.url}" target="a_blank">
+          <strong> ${story.author}</strong>
         </a>
         <small class="article-author">by ${story.author}</small>
         <small class="article-hostname ${hostName}">(${hostName})</small>

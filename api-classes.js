@@ -113,6 +113,13 @@ class User {
    * - password: an existing user's password
    */
 
+   async addFavorite(storyId){
+    const post = await axios.post(`${BASE_URL}/${this.username}/favorites/${storyId}`, { "token": this.login })
+
+
+    return true;
+   }
+
   static async login(username, password) {
     const response = await axios.post(`${BASE_URL}/login`, {
       user: {
@@ -121,7 +128,13 @@ class User {
       }
     });
 
+    if(!response.data || !response.data.user)
+      throw new Error('No user structure');
+
+    ////validate external api responses
+
     // build a new User instance from the API response
+    // data undefined error
     const existingUser = new User(response.data.user);
 
     // instantiate Story instances for the user's favorites and ownStories
@@ -185,3 +198,5 @@ class Story {
     this.updatedAt = storyObj.updatedAt;
   }
 }
+
+User.register('username','password')
